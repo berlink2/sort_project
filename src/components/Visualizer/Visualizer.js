@@ -116,6 +116,7 @@ export default () => {
     setAvg("-");
     setBest("-");
     setSeconds(0);
+    barRef.current.value = 0;
   };
 
   //method that resets color of array
