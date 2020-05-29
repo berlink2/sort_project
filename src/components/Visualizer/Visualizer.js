@@ -5,8 +5,57 @@ import QuickSort from "../Algorithms/QuickSort";
 import InsertionSort from "../Algorithms/InsertionSort";
 import BubbleSort from "../Algorithms/BubbleSort";
 
-const ANIMATION_SPEED = 4;
-const ARRAY_BAR_NUM = 200;
+const windowWidth = window.innerWidth;
+let ANIMATION_SPEED = 0;
+let ARRAY_BAR_NUM = 0;
+let ARRAY_BAR_HEIGHT = 400;
+
+//switch case to change number of bars according to screen size
+switch (true) {
+  case windowWidth >= 1400: {
+    ANIMATION_SPEED = 4;
+    ARRAY_BAR_NUM = 200;
+    break;
+  }
+  case windowWidth < 1250 && windowWidth > 1000:
+    ANIMATION_SPEED = 4;
+    ARRAY_BAR_NUM = 190;
+    break;
+
+  case windowWidth <= 1000 && windowWidth > 800: {
+    ANIMATION_SPEED = 6;
+    ARRAY_BAR_NUM = 150;
+    break;
+  }
+  case windowWidth <= 800 && windowWidth > 650: {
+    ANIMATION_SPEED = 10;
+    ARRAY_BAR_NUM = 100;
+    ARRAY_BAR_HEIGHT = 300;
+    break;
+  }
+  case windowWidth <= 650 && windowWidth > 500: {
+    ANIMATION_SPEED = 12;
+    ARRAY_BAR_NUM = 75;
+    ARRAY_BAR_HEIGHT = 250;
+    break;
+  }
+  case windowWidth <= 500 && windowWidth > 420: {
+    ANIMATION_SPEED = 20;
+    ARRAY_BAR_NUM = 50;
+    ARRAY_BAR_HEIGHT = 250;
+    break;
+  }
+  case windowWidth <= 420 && windowWidth > 300: {
+    ANIMATION_SPEED = 30;
+    ARRAY_BAR_NUM = 40;
+    ARRAY_BAR_HEIGHT = 250;
+    break;
+  }
+  default:
+    ANIMATION_SPEED = 4;
+    ARRAY_BAR_NUM = 200;
+}
+
 const FINISHED_COLOR = "greenyellow";
 const SORT_COLOR = "red";
 
@@ -18,8 +67,21 @@ export default () => {
   const [best, setBest] = useState("-");
   const [isSorting, setIsSorting] = useState(false);
   const containerRef = useRef(null);
-  const [seconds, setSeconds] = useState(0.0);
+  const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const barRef = useRef(null);
+
+  //function that fills bar
+  const fillBar = (totalTime) => {
+    const bar = barRef.current;
+    const interval = setInterval(() => {
+      bar.value = bar.value + 0.1;
+
+      if (bar.value >= 100) {
+        clearInterval(interval);
+      }
+    }, totalTime / 1000);
+  };
 
   //starts timer
   useEffect(() => {
@@ -45,7 +107,7 @@ export default () => {
     resetArrayColour();
     let value;
     for (let i = 0; i < ARRAY_BAR_NUM; i++) {
-      value = randomIntFromInterval(10, 500);
+      value = randomIntFromInterval(15, ARRAY_BAR_HEIGHT);
       array.push(value);
     }
     setArray(array);
@@ -105,6 +167,9 @@ export default () => {
 
   //function that starts sort animation
   const animateArrayUpdate = (animations) => {
+    //calls function that fills bar and provides length of animation in ms
+    fillBar(animations.length * ANIMATION_SPEED);
+
     setIsActive(true);
     if (isSorting) return;
     setIsSorting(true);
@@ -129,6 +194,7 @@ export default () => {
         }
       }, index * ANIMATION_SPEED);
     });
+
     setTimeout(() => {
       animateSortedArray();
     }, animations.length * ANIMATION_SPEED);
@@ -164,57 +230,71 @@ export default () => {
 
   return (
     <>
-      <div className="container" id="info">
-        <table className="table is-narrow">
-          <th>Sorting Algorthim</th>
-          <th>Worst Case Time Complexity</th>
-          <th>Average Case Time Complexity</th>
-          <th>Best Case Time Complexity</th>
+      <div className="container">
+        <div className="container info-container">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Sorting Algorthim</th>
+                <th>Worst Case Time Complexity</th>
+                <th>Average Case Time Complexity</th>
+                <th>Best Case Time Complexity</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr>
-              <td>{sortAlgo}</td>
-              <td>{worst}</td>
-              <td>{avg}</td>
-              <td>{best}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div>
-          <p>Time Elapsed: {seconds} seconds</p>
+            <tbody>
+              <tr>
+                <td>{sortAlgo}</td>
+                <td>{worst}</td>
+                <td>{avg}</td>
+                <td>{best}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div>
+            <p>Time Elapsed: {seconds} seconds</p>
+          </div>
+          <div>
+            <progress
+              className="progress is-success"
+              value="0"
+              max="100"
+              ref={barRef}
+            ></progress>
+          </div>
         </div>
-      </div>
-      <div className="container array-container" ref={containerRef}>
-        {array.map((value, i) => (
-          <div
-            className="array-bar"
-            key={i}
-            style={{ height: `${value}px` }}
-          ></div>
-        ))}
+        <div className="container array-container" ref={containerRef}>
+          {array.map((value, i) => (
+            <div
+              className="array-bar"
+              key={i}
+              style={{ height: `${value}px` }}
+            ></div>
+          ))}
+        </div>
       </div>
       <nav className="navbar is-fixed-bottom">
         <div className="navbar-start">
-          <a class="navbar-item" href="https://berlink2.github.io/Resume/">
+          <a className="navbar-item" href="https://berlink2.github.io/Resume/">
             Contact Me
           </a>
         </div>
         <div className="navbar-end">
-          <div class="navbar-item">
+          <div className="navbar-item">
             <div className="buttons">
-              <button class="button is-primary" onClick={mergeSort}>
+              <button className="button is-primary" onClick={mergeSort}>
                 Merge Sort
               </button>
-              <button class="button is-primary" onClick={quickSort}>
+              <button className="button is-primary" onClick={quickSort}>
                 Quick Sort
               </button>
-              <button class="button is-primary" onClick={insertionSort}>
+              <button className="button is-primary" onClick={insertionSort}>
                 Insertion Sort
               </button>
-              <button class="button is-primary" onClick={bubbleSort}>
+              <button className="button is-primary" onClick={bubbleSort}>
                 Bubble Sort
               </button>
-              <button class="button is-primary" onClick={resetArray}>
+              <button className="button is-primary" onClick={resetArray}>
                 Reset Array
               </button>
             </div>
