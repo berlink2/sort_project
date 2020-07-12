@@ -15,3 +15,5 @@ Quick Sort
 
 ![quickSort](https://user-images.githubusercontent.com/46464571/87250613-36167e80-c490-11ea-9c7a-3dfc2f6e49a9.gif)
 
+Insertion Sort and Bubble Sort are included in the app, but gifs of them would be massive and take too long. Check out the <a href="https://berlink2.github.io/sort_project/">app</a> to see them for yourself!
+
